@@ -14,8 +14,8 @@ import { connectSocket, socket } from "../../State/socetApi";
 import { selectCurrentUser } from "../../State/AuthSlice";
 import { useNavigate } from "react-router-dom";
 import { colors } from "../../../MaterialTheme";
-const S3_BUCKET_NAME = import.meta.env.VITE_S3_BUCKET_NAME;
-const s3_REGION = import.meta.env.VITE_AWS_REGION;
+import { VITE_AWS_REGION, VITE_S3_BUCKET_NAME } from "../../utils/consfig";
+
 function PrdocutContent({
   subcategory,
   name,
@@ -43,7 +43,8 @@ function PrdocutContent({
     }
     navigate("/Chat");
   };
-
+  const S3_BUCKET_NAME = VITE_S3_BUCKET_NAME;
+  const s3_REGION = VITE_AWS_REGION;
   return (
     <Container>
       <Box mt={3}>

@@ -18,7 +18,7 @@ import { FaShoppingCart } from "react-icons/fa";
 import { colors } from "../../../MaterialTheme";
 import { addToCart } from "../../State/cartSlice";
 import { useDispatch } from "react-redux";
-
+import { VITE_AWS_REGION, VITE_S3_BUCKET_NAME } from "../../utils/consfig";
 export default function ProductCard({ product, lang }) {
   const Navigate = useNavigate();
   const dispatch = useDispatch();
@@ -43,8 +43,10 @@ export default function ProductCard({ product, lang }) {
       setAlert({ ...alert, visible: false });
     }, 3000);
   }
-  const S3_BUCKET_NAME = import.meta.env.VITE_S3_BUCKET_NAME;
-  const s3_REGION = import.meta.env.VITE_AWS_REGION;
+
+  const S3_BUCKET_NAME = VITE_S3_BUCKET_NAME;
+  const s3_REGION = VITE_AWS_REGION;
+
   return (
     <>
       {product[lang]?.name && (
