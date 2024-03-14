@@ -3,7 +3,7 @@ import Navbar from "../Features/HomeFeatures/Navbar";
 import Carousel from "react-material-ui-carousel";
 import { BannerCarousels } from "../utils/Carousel";
 import Banner from "../Features/HomeFeatures/Banner";
-import { Box, Container, Grid, Stack } from "@mui/material";
+import { Box, Container, Grid, Stack, Typography } from "@mui/material";
 import ProductCard from "../Features/HomeFeatures/ProductCard";
 import { colors } from "../../MaterialTheme";
 import { useGetProductsQuery } from "../State/productsApiSlice";
