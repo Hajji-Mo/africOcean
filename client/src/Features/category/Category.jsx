@@ -1,26 +1,36 @@
+import { colors } from "../../../MaterialTheme";
 import { Button, List, ListItemButton, Paper, Stack } from "@mui/material";
-import React, { useState } from "react";
+import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { getSearchQuery } from "../../State/AppSlice";
 
 function Subcategories({ index, subcategory, products, lang }) {
   const [toggle, setToggle] = useState(false);
+  const dispatch = useDispatch();
   const filteredProducties = products.filter(
     (product) => product[lang]?.subcategory.toLowerCase().trim() === subcategory
   );
 
   const allBrands = filteredProducties.map((product) =>
-    product.brand.toLowerCase().trim()
+    product.brand?.toLowerCase().trim()
   );
-
   const brands = allBrands.filter(
     (value, index) => allBrands.indexOf(value) === index
   );
+
+  function handlesubCategoryFilter() {
+    dispatch(getSearchQuery(subcategory));
+  }
 
   return (
     <Stack
       onMouseEnter={() => setToggle(true)}
       onMouseLeave={() => setToggle(false)}
     >
-      <ListItemButton sx={{ position: "relative", minWidth: "7rem" }}>
+      <ListItemButton
+        sx={{ position: "relative", minWidth: "7rem" }}
+        onClick={handlesubCategoryFilter}
+      >
         {subcategory}
       </ListItemButton>
       {toggle && (
@@ -39,7 +49,12 @@ function Subcategories({ index, subcategory, products, lang }) {
 }
 
 function BrandCategory({ brand }) {
-  return <ListItemButton>{brand}</ListItemButton>;
+  const dispatch = useDispatch();
+  function handleBrand() {
+    dispatch(getSearchQuery(brand));
+  }
+
+  return <ListItemButton onClick={handleBrand}>{brand}</ListItemButton>;
 }
 
 function Category({ category, products, lang }) {
@@ -61,7 +76,13 @@ function Category({ category, products, lang }) {
       onMouseEnter={() => setToggle(true)}
       onMouseLeave={() => setToggle(false)}
     >
-      <Button sx={{ position: "relative", textTransform: "capitalize" }}>
+      <Button
+        sx={{
+          position: "relative",
+          textTransform: "capitalize",
+          color: colors.main,
+        }}
+      >
         {category}
       </Button>
       {toggle && (

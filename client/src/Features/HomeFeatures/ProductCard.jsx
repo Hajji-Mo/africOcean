@@ -13,7 +13,7 @@ import {
   Stack,
 } from "@mui/material";
 
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaShoppingCart } from "react-icons/fa";
 import { colors } from "../../../MaterialTheme";
 import { addToCart } from "../../State/cartSlice";
@@ -48,8 +48,8 @@ export default function ProductCard({ product, lang }) {
 
   return (
     <>
-      {product[lang]?.name && (
-        <Grid item xs={6} sm={4} lg={3} xlg={2} sx={{ position: "relative" }}>
+      {product[lang]?.description && (
+        <Grid item xs={6} sm={4} md={3} lg={2} sx={{ position: "relative" }}>
           {alert.visible && (
             <Alert
               variant="filled"
@@ -95,7 +95,7 @@ export default function ProductCard({ product, lang }) {
                   className="tex-ellipsis"
                   sx={{ margin: 0, marginBottom: 1 }}
                 >
-                  {product[lang]?.name}
+                  {product.name}
                 </Box>
                 <IconButton
                   sx={{ color: colors.main, mt: -1 }}
@@ -128,9 +128,13 @@ export default function ProductCard({ product, lang }) {
                 >
                   $ {product.price}
                 </Box>
-                <Button variant="text" sx={{ textTransform: "capitalize" }}>
-                  Order now
-                </Button>
+                <Link
+                  to={`https://wa.me/260773416630?text=i'm intrested to buy ${name} https://${S3_BUCKET_NAME}.s3.${s3_REGION}.amazonaws.com/${product.coverImg}`}
+                >
+                  <Button variant="text" sx={{ textTransform: "capitalize" }}>
+                    Order now
+                  </Button>
+                </Link>
               </Box>
             </CardContent>
           </Card>

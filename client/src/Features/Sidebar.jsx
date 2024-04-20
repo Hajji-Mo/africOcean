@@ -16,6 +16,7 @@ import {
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { colors, theme } from "../../MaterialTheme";
+import { AiOutlineUpload } from "react-icons/ai";
 import { IoIosArrowForward } from "react-icons/io";
 import { CgChevronRight, CgProfile } from "react-icons/cg";
 import { AiOutlineHome } from "react-icons/ai";
@@ -23,6 +24,9 @@ import { MdProductionQuantityLimits } from "react-icons/md";
 import { IoPeopleOutline } from "react-icons/io5";
 import { MdOutlineAdminPanelSettings } from "react-icons/md";
 import Selectlanguage from "./HomeFeatures/languege";
+
+import SideBarItems from "./SideBarItems";
+
 const navItems = [
   {
     text: "Dashboard",
@@ -34,11 +38,16 @@ const navItems = [
   },
   {
     text: " Upload Product",
-    icon: <MdProductionQuantityLimits />,
+    icon: <AiOutlineUpload />,
   },
+
   {
     text: "Customers",
     icon: <IoPeopleOutline />,
+  },
+  {
+    text: "Products",
+    icon: <MdProductionQuantityLimits />,
   },
 
   {
@@ -49,8 +58,11 @@ const navItems = [
 
 const Sidebar = ({ setIsSidebarOpen }) => {
   const { pathname } = useLocation();
-  const [active, setActive] = useState("");
   const navigate = useNavigate();
+  const langtext = {
+    en: "English",
+    fr: "france",
+  };
 
   return (
     <>
@@ -94,55 +106,18 @@ const Sidebar = ({ setIsSidebarOpen }) => {
         </Box>
         <Box width={"80%"}>
           <List>
-            {navItems.map(({ text, icon }) => {
-              if (!icon) {
-                return (
-                  <Typography key={text} sx={{}}>
-                    {text}
-                  </Typography>
-                );
-              }
-              const lcText = text.toLowerCase();
+            {navItems.map((navItem) => (
+              <SideBarItems
+                navItem={navItem}
+                key={navItem.text}
+                setIsSidebarOpen={setIsSidebarOpen}
+              />
+            ))}
 
-              return (
-                <ListItem key={text} disablePadding>
-                  <ListItemButton
-                    onClick={() => {}}
-                    sx={{
-                      backgroundColor:
-                        active === lcText
-                          ? theme.palette.secondary[300]
-                          : "transparent",
-                      color:
-                        active === lcText
-                          ? theme.palette.primary[600]
-                          : theme.palette.secondary[100],
-                    }}
-                  >
-                    <ListItemIcon
-                      sx={{
-                        ml: "2rem",
-                        fontSize: "1.5rem",
-                        color:
-                          active === lcText
-                            ? theme.palette.primary[600]
-                            : theme.palette.secondary[200],
-                      }}
-                    >
-                      {icon}
-                    </ListItemIcon>
-                    <ListItemText primary={text} />
-                    {active === lcText && (
-                      <CgChevronRight sx={{ ml: "auto" }} />
-                    )}
-                  </ListItemButton>
-                </ListItem>
-              );
-            })}
             <ListItem sx={{ marginLeft: "2rem" }}>
               <Typography>Select language:</Typography>
               <Box sx={{ marginLeft: ".5rem" }}>
-                <Selectlanguage mobile />
+                <Selectlanguage langtext={langtext} mobile />
               </Box>
             </ListItem>
           </List>

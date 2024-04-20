@@ -14,6 +14,7 @@ const {
   updateAll,
 } = require("./HandleFactory");
 const catchAsync = require("../utils/catchAsync");
+const FrTranslation = require("../Model/FrTranslation");
 
 const AWS_ACCESS_KEY_ID = process.env.AWS_ACCESS_KEY_ID;
 const AWS_SECRET_ACCESS_KEY = process.env.AWS_SECRET_ACCESS_KEY;
@@ -27,6 +28,18 @@ const awsConfig = {
 const s3Client = new S3Client(awsConfig);
 const multerStorage = multer.memoryStorage();
 
+const productsQuery = (req) => {
+  let query = {};
+  if (req.query.search) {
+    query.tags = { $regex: req.query.search, $options: "i" };
+  }
+  if (req.query.country || req.query.city) {
+    query.country = { $regex: req.query.country, $options: "i" };
+    query.city = { $regex: req.query.city, $options: "i" };
+    query.activeStatus = "active";
+  }
+  return query;
+};
 const multerFilter = (req, file, cb) => {
   if (file.mimetype.startsWith("image")) {
     cb(null, true);
@@ -101,15 +114,24 @@ exports.resizeImages = catchAsync(async (req, res, next) => {
 });
 
 exports.createProduct = catchAsync(async (req, res, next) => {
-  if (req.body.en) {
+  if (req.body.en || req.body.fr) {
     const en = await EngTranslation.create(req.body.en);
+    const fr = await FrTranslation.create(req.body.fr);
     req.body.en = en._id.toString().split("()").join();
+    req.body.fr = fr._id.toString().split("()").join();
+  } else {
+    return next(
+      new AppError(
+        "product name , description and more other fields are required",
+        404
+      )
+    );
   }
 
   const doc = await Products.create(req.body);
-
   if (!doc) {
     if (req.body.en) await EngTranslation.delete(req.body.en);
+    if (req.body.fr) await EngTranslation.delete(req.body.fr);
     return next(
       new AppError("No document is created there's some thing went wrong", 404)
     );
@@ -120,6 +142,51 @@ exports.createProduct = catchAsync(async (req, res, next) => {
     data: {
       data: doc,
     },
+  });
+});
+
+exports.getSearchedPorducts = catchAsync(async (req, res, next) => {
+  const query = productsQuery(req);
+  const doc = await Products.find(query)
+    .populate({ path: `${req.query.lang}` })
+    .sort("-_id");
+  res.status(200).json({
+    success: true,
+    doc,
+  });
+});
+exports.getTopProducts = catchAsync(async (req, res, next) => {
+  const query = productsQuery(req);
+  const doc = await Products.find(query)
+    .populate({ path: `${req.query.lang}` })
+    .sort({ rate: -1 })
+    .limit(4);
+  res.status(200).json({
+    success: true,
+    doc,
+  });
+});
+
+exports.getNewProducts = catchAsync(async (req, res, next) => {
+  const query = productsQuery(req);
+  const doc = await Products.find(query)
+    .populate({ path: `${req.query.lang}` })
+    .sort({ _id: -1 })
+    .limit(4);
+  res.status(200).json({
+    success: true,
+    doc,
+  });
+});
+
+exports.getPendedPorducts = catchAsync(async (req, res, next) => {
+  const doc = await Products.find({ activeStatus: "pending" })
+    .populate({ path: `${req.query.lang}` })
+    .sort("-_id");
+
+  res.status(200).json({
+    success: true,
+    doc,
   });
 });
 

@@ -1,10 +1,6 @@
 const { default: mongoose } = require("mongoose");
 const slugify = require("slugify");
 const EngTranslationSchema = mongoose.Schema({
-  name: {
-    type: String,
-    required: [true, "a product must have a name"],
-  },
   description: {
     type: String,
     required: [true, "a product must have a description"],
@@ -20,10 +16,6 @@ const EngTranslationSchema = mongoose.Schema({
   summary: String,
   slug: String,
   status: String,
-});
-EngTranslationSchema.pre("save", function (next) {
-  this.slug = slugify(this.name, { lower: true });
-  next();
 });
 
 const EngTranslation = mongoose.model("EngTranslation", EngTranslationSchema);

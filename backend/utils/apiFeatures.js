@@ -1,19 +1,25 @@
 class APIFeatures {
-  constructor(query, queryString) {
+  constructor(query, popOption, queryString) {
     this.query = query;
+    this.popOption = popOption;
     this.queryString = queryString;
   }
 
   filter() {
     const queryObj = { ...this.queryString };
-    const excludedFields = ["page", "sort", "limit", "fields"];
+    const excludedFields = ["page", "sort", "limit", "fields", "lang"];
     excludedFields.forEach((el) => delete queryObj[el]);
 
     // 1B) Advanced filtering
     let queryStr = JSON.stringify(queryObj);
     queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
-
-    this.query = this.query.find(JSON.parse(queryStr));
+    if (this.popOption) {
+      this.query = this.query
+        .find(JSON.parse(queryStr))
+        .populate({ path: `${this.queryString.lang}` });
+    } else {
+      this.query = this.query.find(JSON.parse(queryStr));
+    }
 
     return this;
   }
@@ -23,7 +29,7 @@ class APIFeatures {
       const sortBy = this.queryString.sort.split(",").join(" ");
       this.query = this.query.sort(sortBy);
     } else {
-      this.query = this.query.sort("-createdAt");
+      this.query = this.query.sort("-_id");
     }
 
     return this;

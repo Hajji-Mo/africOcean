@@ -24,23 +24,36 @@ import {
 } from "../../State/productsApiSlice";
 import { selectCurrentUser } from "../../State/AuthSlice";
 import { useSelector } from "react-redux";
-
+import { getDashboardContent } from "../../State/AppSlice";
+import { useDispatch } from "react-redux";
 const UploadProduct = () => {
   const [createProduct] = useCreateProductMutation();
   const [uploadImages] = useUploadImagesMutation();
   const user = useSelector(selectCurrentUser);
+  const dispatch = useDispatch();
   const [coverImgFile, setCoverImg] = useState("");
   const [imageFiles, setImageFiles] = useState([]);
   const [lang, setLang] = useState("en");
+  const [alert, setAlert] = useState({
+    visible: false,
+    color: "",
+    message: "",
+  });
   const [formData, setFormData] = useState({
     en: {
-      name: "",
       description: "",
       category: "",
       subcategory: "",
       summary: "",
     },
-    minQuantity: "",
+    fr: {
+      description: "",
+      category: "",
+      subcategory: "",
+      summary: "",
+    },
+    name: "",
+    rate: "",
     price: "",
     priceDiscount: "",
     coverImg: null,
@@ -75,47 +88,48 @@ const UploadProduct = () => {
       });
     }
     formFiles.append("coverImg", coverImgFile);
-    if (user) {
-      formData.creator = user._id;
+    if (
+      (!user && !user.role === "manager") ||
+      (!user && !user.role === "admin")
+    ) {
+      setAlert({
+        ...alert,
+        visible: true,
+        color: "error",
+        message: "UnAutherized to upload product!!!",
+      });
+      setTimeout(() => {
+        setAlert({ ...alert, visible: false });
+      }, 3000);
     }
+    formData.creator = user._id;
     try {
       const res = await uploadImages(formFiles);
-
       const { coverImg, images } = res.data;
 
       formData.coverImg = coverImg;
       formData.images = images;
-
-      await createProduct(formData);
-      // setFormData({
-      //   en: {
-      //     name: "",
-      //     description: "",
-      //     category: "",
-      //     subcategory: "",
-      //     summary: "",
-      //   },
-      //   fr: {
-      //     name: "",
-      //     description: "",
-      //     category: "",
-      //     subcategory: "",
-      //     summary: "",
-      //   },
-      //   minQuantity: "",
-      //   price: "",
-      //   priceDiscount: "",
-      //   coverImg: null,
-      //   images: [],
-      //   brand: "",
-      //   tags: [],
-      //   rank: "",
-      //   country: "",
-      //   creator: "",
-
-      //   city: "",
-      // });
+      const createdprodct = await createProduct(formData);
+      setAlert({
+        ...alert,
+        visible: true,
+        color: "success",
+        message: "successfully uplaoded your product",
+      });
+      setTimeout(() => {
+        setAlert({ ...alert, visible: false });
+      }, 3000);
     } catch (err) {
+      console.log(err);
+      setAlert({
+        ...alert,
+        visible: true,
+        color: "error",
+        message: err.data.message,
+      });
+      setTimeout(() => {
+        return setAlert({ ...alert, visible: false });
+      }, 5000);
       throw Error(err);
     }
   };
@@ -123,39 +137,33 @@ const UploadProduct = () => {
   return (
     <Container sx={{ marginTop: "2.5rem" }}>
       <Typography variant="h4">Create Product</Typography>
-      <Stack
-        component={"form"}
-        sx={{ mt: 1, mr: 1, minWidth: 90 }}
-        size="small"
-        direction={"row"}
-      >
-        <Typography variant="h6">Select languege:</Typography>
-        <Select
-          labelId="demo-select-small-label"
-          id="demo-select-small"
-          value={lang}
-          variant="standard"
-          label="lang"
-          disableUnderline
-          sx={{ ml: ".5rem" }}
-          onChange={(e) => setLang(e.target.value)}
+      {alert.visible && (
+        <Alert
+          variant="filled"
+          severity={alert.color}
+          sx={{ mt: 3, position: "fixed" }}
         >
-          <MenuItem value="en">
-            <em>English</em>
-          </MenuItem>
-        </Select>
-      </Stack>
-      <Box component="form" Validate onSubmit={handleSubmit} sx={{ mt: 3 }}>
-        <PrductInputForms
-          langData={formData[lang]}
-          lang={lang}
-          handleChange={handleChange}
-        />
+          {alert.message}
+        </Alert>
+      )}
 
+      <Box component="form" Validate onSubmit={handleSubmit} sx={{ mt: 3 }}>
         <Typography sx={{ pb: "2rem", pt: "2rem", textAlign: "center" }}>
           Common Fields
         </Typography>
         <Grid container spacing={2}>
+          <Grid item xs={6} sm={4} lg={4}>
+            <TextField
+              autoComplete="name"
+              name="name"
+              required
+              fullWidth
+              id="name"
+              label="Name"
+              value={formData.name}
+              onChange={(e) => handleCommonChange("name", e.target.value)}
+            />
+          </Grid>
           <Grid item xs={6} sm={4} lg={4}>
             <TextField
               autoComplete="brand"
@@ -170,16 +178,14 @@ const UploadProduct = () => {
           </Grid>
           <Grid item xs={6} sm={4} lg={4}>
             <TextField
-              autoComplete="minQuantity"
-              name="minQuantity"
+              autoComplete="Rate"
+              name="Rate"
               fullWidth
-              id="minQuantity"
-              label="min-Quantity"
+              id="Rate"
+              label="Rating"
               type="number"
-              value={formData.minQuantity}
-              onChange={(e) =>
-                handleCommonChange("minQuantity", e.target.value)
-              }
+              value={formData.rate}
+              onChange={(e) => handleCommonChange("rate", e.target.value)}
             />
           </Grid>
           <Grid item xs={6} sm={4} lg={4}>
@@ -332,15 +338,45 @@ const UploadProduct = () => {
               )}
             </Box>
           </Grid>
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            sx={{ my: 3, mb: 2 }}
-          >
-            Upload
-          </Button>
         </Grid>
+        <Stack
+          component={"form"}
+          sx={{ mt: 3, mr: 1, minWidth: 90 }}
+          size="small"
+          direction={"row"}
+        >
+          <Typography variant="h6">Select languege:</Typography>
+          <Select
+            labelId="demo-select-small-label"
+            id="demo-select-small"
+            value={lang}
+            variant="standard"
+            label="lang"
+            disableUnderline
+            sx={{ ml: ".5rem" }}
+            onChange={(e) => setLang(e.target.value)}
+          >
+            <MenuItem value="en">
+              <em>English</em>
+            </MenuItem>
+            <MenuItem value="fr">
+              <em>French</em>
+            </MenuItem>
+          </Select>
+        </Stack>
+        <PrductInputForms
+          langData={formData[lang]}
+          lang={lang}
+          handleChange={handleChange}
+        />
+        <Button
+          type="submit"
+          fullWidth
+          variant="contained"
+          sx={{ my: 3, mb: 2 }}
+        >
+          Upload
+        </Button>
       </Box>
     </Container>
   );

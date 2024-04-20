@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { useSelector } from "react-redux";
 import {
+  Alert,
   Box,
   Button,
   Card,
@@ -10,39 +10,45 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import { connectSocket, socket } from "../../State/socetApi";
-import { selectCurrentUser } from "../../State/AuthSlice";
-import { useNavigate } from "react-router-dom";
-import { colors } from "../../../MaterialTheme";
+
+import { colors } from "@mui/material";
+
+import { buttons, keywords } from "../../clientUtils/lists";
+import { Link } from "react-router-dom";
 const S3_BUCKET_NAME = import.meta.env.VITE_S3_BUCKET_NAME;
-const s3_REGION = import.meta.env.VITE_AWS_REGION;
+const AWS_REGION = import.meta.env.VITE_AWS_REGION;
 function PrdocutContent({
   subcategory,
   name,
   description,
   price,
+  country,
+  city,
   summary,
   coverImage,
-  creadtorId,
   images,
+  id,
 }) {
+  const lang = "en";
   const [coverImg, setCoverImg] = useState(coverImage);
-  const user = useSelector(selectCurrentUser);
-  const navigate = useNavigate();
-  const quantity = "10";
-  const proDiscount = 6;
-  const discount = (price * proDiscount) / 100;
-  const pay = price - discount;
-  const handleChat = () => {
-    if (user) {
-      if (!socket) connectSocket(user._id);
-      socket.emit("start_conversation", {
-        to: creadtorId,
-        from: user._id,
-      });
-    }
-    navigate("/Chat");
-  };
+  const [alert, setAlert] = useState({
+    visible: false,
+    color: "",
+    message: "",
+  });
+
+  function handleCart() {
+    addToCart(id);
+    setAlert({
+      ...alert,
+      visible: true,
+      color: "success",
+      message: "The product is successfully added into your Cart",
+    });
+    setTimeout(() => {
+      setAlert({ ...alert, visible: false });
+    }, 3000);
+  }
 
   return (
     <Container>
@@ -55,6 +61,15 @@ function PrdocutContent({
           {subcategory && subcategory} | {name && name}{" "}
         </Typography>
       </Box>
+      {alert.visible && (
+        <Alert
+          variant="filled"
+          severity={alert.color}
+          sx={{ position: "absolute" }}
+        >
+          {alert.message}
+        </Alert>
+      )}
       <Stack
         sx={{
           mt: 3,
@@ -77,7 +92,7 @@ function PrdocutContent({
           >
             <CardMedia
               component="img"
-              image={`https://${S3_BUCKET_NAME}.s3.${s3_REGION}.amazonaws.com/${coverImage}`}
+              image={`https://${S3_BUCKET_NAME}.s3.${AWS_REGION}.amazonaws.com/${coverImg}`}
               alt="green iguana"
               sx={{
                 width: "100%",
@@ -115,14 +130,6 @@ function PrdocutContent({
             <Typography variant="h5" fontWeight={"bold"}>
               ${price}
             </Typography>
-            <Typography
-              variant="body2"
-              sx={{ fontStyle: "italic", color: colors.Brown }}
-            >
-              {quantity
-                ? ` buy ${quantity}, to get discount of ${proDiscount}% ($${discount}) and pay $${pay}`
-                : ""}
-            </Typography>
           </Stack>
           {summary &&
             summary
@@ -134,26 +141,54 @@ function PrdocutContent({
                     .map((x, i) => (i === 0 ? <b key={i}>{x}</b> : x))}{" "}
                 </Typography>
               ))}
+          <Box>
+            <Typography variant="h5">{keywords.location[lang]}:</Typography>
+            <Stack direction={"row"}>
+              {country && (
+                <Typography variant="h6">
+                  {keywords.country[lang]}:{" "}
+                  <Typography component={"span"}>{country}</Typography>
+                </Typography>
+              )}
+              {city && (
+                <Typography variant="h6" sx={{ pl: "1.3rem" }}>
+                  {keywords.city[lang]}:{" "}
+                  <Typography component={"span"}>{city}</Typography>
+                </Typography>
+              )}
+            </Stack>
+          </Box>
           <Stack direction={"row"}>
-            <Button variant="contained" className="buttonGroups btnConained">
-              Add To cart
-            </Button>
-            <Button variant="outlined" className="buttonGroups btnOutlined">
-              Order Now
-            </Button>
             <Button
               variant="contained"
               className="buttonGroups btnConained"
-              onClick={handleChat}
+              onClick={handleCart}
             >
-              Chat Now
+              {buttons.addtocart[lang]}
             </Button>
+
+            <Link
+              to={`https://wa.me/260773416630?text=i'm intrested to buy ${name} https://${S3_BUCKET_NAME}.s3.${AWS_REGION}.amazonaws.com/${coverImg}`}
+              style={{ textDecoration: "none" }}
+            >
+              <Button variant="outlined" className="buttonGroups btnOutlined">
+                {buttons.order[lang]}
+              </Button>
+            </Link>
+            <Link
+              to={`https://wa.me/260773416630?text=i'm intrested to by${name} https://${S3_BUCKET_NAME}.s3.${AWS_REGION}.amazonaws.com/${coverImg}`}
+              style={{ textDecoration: "none" }}
+            >
+              <Button variant="contained" className="buttonGroups btnConained">
+                {buttons.chat[lang]}
+              </Button>
+            </Link>
           </Stack>
         </Paper>
       </Stack>
-      <Paper sx={{ mt: 3, pt: 2, pl: 1 }}>
+      <Paper sx={{ mt: 3, py: 2, pl: 1 }} elevation={0}>
         <Typography sx={{ pb: 2 }} variant="h4">
-          key Attributes
+          {keywords.atributes[lang]}
         </Typography>
         {description &&
           description
@@ -192,7 +227,7 @@ function ImgCard({ image, setCoverImg }) {
       >
         <CardMedia
           component="img"
-          image={`https://${S3_BUCKET_NAME}.s3.${s3_REGION}.amazonaws.com/${image}`}
+          image={`https://${S3_BUCKET_NAME}.s3.${AWS_REGION}.amazonaws.com/${image}`}
           alt="green iguana"
           sx={{
             width: "100%",

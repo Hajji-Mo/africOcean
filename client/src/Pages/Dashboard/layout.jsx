@@ -1,12 +1,24 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Stack } from "@mui/material";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import DashboardNavbar from "../../Features/DashboardNavbar";
 import Sidebar from "../../Features/Sidebar";
 import { colors } from "../../../MaterialTheme";
+import { useSelector } from "react-redux";
+import { selectCurrentUser } from "../../State/AuthSlice";
 
 const DashLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const user = useSelector(selectCurrentUser);
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (
+      (!user && !user?.role === "manager") ||
+      (!user && !user.role === "admin")
+    ) {
+      navigate("/SignIn");
+    }
+  }, [user, navigate]);
   return (
     <Stack
       sx={{

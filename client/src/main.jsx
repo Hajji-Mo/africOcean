@@ -10,11 +10,13 @@ import { api } from "./State/api.jsx";
 import AuthSlice from "./State/AuthSlice.js";
 import ChatSlice from "./State/ChatSlice.jsx";
 import cartSlice from "./State/cartSlice.jsx";
+import AppSlice from "./State/AppSlice.jsx";
 const store = configureStore({
   reducer: {
     auth: AuthSlice,
     chat: ChatSlice,
     cart: cartSlice,
+    app: AppSlice,
     [api.reducerPath]: api.reducer,
   },
   middleware: (getDefault) => getDefault().concat(api.middleware),

@@ -207,7 +207,11 @@ export default function Register() {
             <Grid item>
               <Stack variant="body2" direction={"row"} color={colors.main}>
                 <Typography>Already have an account?</Typography>
-                <Link component={RouterLink} sx={{ textDecoration: "none" }}>
+                <Link
+                  to={"/SignIn"}
+                  component={RouterLink}
+                  sx={{ textDecoration: "none" }}
+                >
                   Sign in
                 </Link>
               </Stack>

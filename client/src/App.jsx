@@ -9,16 +9,16 @@ import { ThemeProvider } from "@mui/material/styles";
 import "./App.css";
 import { theme } from "../MaterialTheme";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import SpinnerFullPage from "./utils/SpinnerFullPage";
+import SpinnerFullPage from "./clientUtils/SpinnerFullPage";
 
 const HomePage = lazy(() => import("./Pages/HomePage"));
 const ProductDetail = lazy(() => import("./Pages/ProductDetail"));
 const Register = lazy(() => import("./Pages/RegisterPage"));
 const SignIn = lazy(() => import("./Pages/SignIn"));
-const RequireAuth = lazy(() => import("./utils/RequireAuth"));
-const ChatPage = lazy(() => import("./Pages/Chatpage"));
+const RequireAuth = lazy(() => import("./clientUtils/RequireAuth"));
 const Dashboard = lazy(() => import("./Pages/Dashboard/DashBoard"));
 const DashLayout = lazy(() => import("./Pages/Dashboard/layout"));
+const CartPage = lazy(() => import("./Pages/CartPage"));
 // dist/assets/index-Rjg3HRTT.css                                25.13 kB │ gzip:  11.13 kB
 // dist/assets/index-HDX3_aaY.js                              1,449.38 kB │ gzip: 419.66 kB
 
@@ -32,9 +32,9 @@ function App() {
             <Route path="Home" element={<HomePage />} />
             <Route path="Register" element={<Register />} />
             <Route path="SignIn" element={<SignIn />} />
+            <Route path="Cart" element={<CartPage />} />
             <Route path="Product/:id" element={<ProductDetail />} />
             <Route element={<RequireAuth />}>
-              <Route path="/Chat" element={<ChatPage />} />
               <Route element={<DashLayout />}>
                 <Route path="Dashboard" element={<Dashboard />} />
               </Route>

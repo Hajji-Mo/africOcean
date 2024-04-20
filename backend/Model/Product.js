@@ -1,8 +1,11 @@
 const { Schema, model } = require("mongoose");
 const slugify = require("slugify");
 const ProductSchema = Schema({
+  name: {
+    type: String,
+    required: [true, "a product must have a name"],
+  },
   brand: String,
-
   price: {
     type: Number,
     required: [true, "a product must have a price"],
@@ -27,6 +30,12 @@ const ProductSchema = Schema({
     ref: "User",
     required: [true, "a product must have owner"],
   },
+  activeStatus: {
+    type: String,
+    enum: ["active", "pending"],
+    default: "pending",
+    required: [true, "a product must have status"],
+  },
   country: {
     type: String,
     required: ["please provide your target Country"],
@@ -35,8 +44,7 @@ const ProductSchema = Schema({
     type: String,
     required: ["please provide your target city"],
   },
-  rank: Number,
-  minQuantity: Number,
+  rate: Number,
   tags: {
     type: Array,
     required: [true, "product must have a tag"],
@@ -50,6 +58,10 @@ const ProductSchema = Schema({
     type: Schema.ObjectId,
     ref: "FrTranslation",
   },
+});
+ProductSchema.pre("save", function (next) {
+  this.slug = slugify(this.name, { lower: true });
+  next();
 });
 
 ProductSchema.pre(/^find/, function (next) {

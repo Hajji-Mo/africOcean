@@ -22,7 +22,6 @@ exports.updateOne = (Model) =>
       new: true,
       runValidators: true,
     });
-
     if (!doc) {
       return next(new AppError("No document found with that ID", 404));
     }
@@ -85,6 +84,13 @@ exports.getAll = (Model, popOption) =>
     let query = Model.find(filter);
     if (popOption)
       query = query.populate({ path: `${req.query.lang}` }).sort("-_id");
+    // const features = new APIFeatures(Model.find(filter), popOption, req.query)
+    //   .filter()
+    //   .sort()
+    //   .limitFields()
+    //   .paginate();
+    // const doc = await features.query.explain();
+    // const doc = await features.query;
 
     const doc = await query;
     // SEND RESPONSE

@@ -13,30 +13,19 @@ import {
   Typography,
   colors,
 } from "@mui/material";
-import { data } from "../../utils/catagories";
+import { data } from "../../clientUtils/catagories";
 function PrductInputForms({ langData, lang, handleChange }) {
-  const currentCatagory = data.find((subs) => subs.title === langData.category);
+  const currentCatagory = data.find(
+    (subs) => subs.title[lang] === langData.category
+  );
   const notChoosed = langData.category === "";
+  // console.log(langData.subcatagory);
   const text = lang === "en" ? "fill by English" : "fill by France";
+  const categoryies = data.map((category) => category.title);
   return (
     <Stack>
-      <Typography sx={{ pb: "2rem", pt: "2rem", textAlign: "center" }}>
-        {text}
-      </Typography>
+      <Typography sx={{ pb: "2rem", textAlign: "center" }}>{text}</Typography>
       <Grid container spacing={2}>
-        <Grid item xs={12} sm={6} lg={4}>
-          <TextField
-            autoComplete="given-name"
-            name={`${lang}_name`}
-            required
-            fullWidth
-            id={`${lang}_name`}
-            label={`${lang} name`}
-            autoFocus
-            value={langData.name}
-            onChange={(e) => handleChange(lang, "name", e.target.value)}
-          />
-        </Grid>
         <Grid item xs={12} sm={6} lg={3}>
           <TextField
             required
@@ -52,8 +41,8 @@ function PrductInputForms({ langData, lang, handleChange }) {
             {data &&
               data.map((option, index) => {
                 return (
-                  <MenuItem key={index} value={option.title}>
-                    {option.title}
+                  <MenuItem key={index} value={option.title[lang]}>
+                    {option.title[lang]}
                   </MenuItem>
                 );
               })}
@@ -69,14 +58,13 @@ function PrductInputForms({ langData, lang, handleChange }) {
             label={`${lang} SubCategory`}
             id={`${lang}_SubCategory`}
             autoComplete="SubCategory"
-            disabled={notChoosed}
             onChange={(e) => handleChange(lang, "subcategory", e.target.value)}
           >
             {currentCatagory &&
               currentCatagory.subcatagory.map((option, index) => {
                 return (
-                  <MenuItem key={index} value={option}>
-                    {option}
+                  <MenuItem key={index} value={option[lang]}>
+                    {option[lang]}
                   </MenuItem>
                 );
               })}

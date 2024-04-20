@@ -10,44 +10,73 @@ import {
   Card,
   CardMedia,
   Container,
+  Grid,
   Paper,
   Stack,
   Typography,
 } from "@mui/material";
 import { colors } from "../../MaterialTheme";
-import { useGetOneProductQuery } from "../State/productsApiSlice";
+import {
+  useGetAllProductsQuery,
+  useGetOneProductQuery,
+} from "../State/productsApiSlice";
 
 import { selectCurrentUser } from "../State/AuthSlice";
 import { useSelector } from "react-redux";
 import { connectSocket, socket } from "../State/socetApi";
 import PrdocutContent from "../Features/DetailFeatures/PrdocutContent";
+import { keywords } from "../clientUtils/lists";
+import ProductCard from "../Features/HomeFeatures/ProductCard";
 
 function ProductDetail() {
   const lang = JSON.parse(localStorage.getItem("lang"));
+
   const user = useSelector(selectCurrentUser);
 
   const { id } = useParams();
   const pram = { id, lang };
   const { data, isLoading } = useGetOneProductQuery(pram);
-
+  const { data: recomendData } = useGetAllProductsQuery(lang);
+  let recomendedproduct;
+  if (recomendData && data) {
+    recomendedproduct = recomendData.doc.filter(
+      (product) => product[lang]?.subcategory === data.doc[lang]?.subcategory
+    );
+  }
   return (
     <Stack>
       <Navbar />
       {data && (
         <PrdocutContent
           subcategory={data.doc[lang].subcategory}
-          name={data.doc[lang].name}
+          name={data.doc.name}
           price={data.doc.price}
           coverImage={data.doc.coverImg}
           description={data.doc[lang].description}
           summary={data.doc[lang].summary}
-          creadtorId={data.doc.creator._id}
           images={data.doc.images}
         />
       )}
-      <Stack>
-        <Typography>Other Recomendations for you</Typography>
-      </Stack>
+      <Container>
+        <Stack sx={{ marginTop: "2rem" }}>
+          {lang && (
+            <Typography
+              variant="h5"
+              fontWeight={"bold"}
+              sx={{ paddingBottom: "0.7rem" }}
+            >
+              {keywords.recomendation[lang]}
+            </Typography>
+          )}
+
+          <Grid container spacing={1}>
+            {recomendedproduct &&
+              recomendedproduct.map((product) => (
+                <ProductCard product={product} key={product._id} lang={lang} />
+              ))}
+          </Grid>
+        </Stack>
+      </Container>
     </Stack>
   );
 }

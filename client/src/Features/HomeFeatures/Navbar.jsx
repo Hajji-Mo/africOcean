@@ -1,8 +1,5 @@
-import React, { useState } from "react";
-import { BsLock, BsWhatsapp } from "react-icons/bs";
-import { BsCart3 } from "react-icons/bs";
-
-import { IoPersonOutline } from "react-icons/io5";
+"use client";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Paper,
@@ -12,61 +9,72 @@ import {
   Avatar,
   Input,
   Button,
-  IconButton,
-  TextField,
   ListItemButton,
   List,
-  Badge,
-  Hidden,
 } from "@mui/material";
 // import { BsGlobe2 } from "react-icons/bs";
-import { colors, theme } from "../../../MaterialTheme";
+
 import { FaSearch } from "react-icons/fa";
-import { NavbarList } from "../../utils/lists";
-import { useNavigate } from "react-router-dom";
-import Chatboard from "../../Pages/Chatpage";
-import queryString from "query-string";
-import { useSelector } from "react-redux";
-import { selectCurrentUser } from "../../State/AuthSlice";
+import { NavbarList, keywords } from "../../clientUtils/lists";
 import Selectlanguage from "./languege";
+import { Link } from "react-router-dom";
+import { colors } from "../../../MaterialTheme";
+import { getSearchQuery, selectLang } from "../../State/AppSlice";
+import { useDispatch, useSelector } from "react-redux";
 import { selectCartItems } from "../../State/cartSlice";
 
-function Boxes({ text, Icon, count, navigate, link }) {
+function Boxes({ text, Icon, count, navigate, link, colorwhite }) {
   return (
-    <ListItemButton
-      sx={{
-        display: "flex",
-        cursor: "pointer",
-        alignItems: "center",
-        minWidth: "3rem",
-      }}
-      onClick={() => navigate(link)}
-    >
-      <Box component={"div"} sx={{ fontSize: "1.3rem" }}>
-        <Box>{Icon}</Box>
-      </Box>
-      <Typography sx={{ pl: ".3rem", fontSize: "1rem" }}>{text}</Typography>
-    </ListItemButton>
+    <Link to={`${link}`} style={{ textDecoration: "none" }}>
+      <ListItemButton
+        sx={{
+          display: "flex",
+          cursor: "pointer",
+          alignItems: "center",
+          minWidth: "3rem",
+          color: colorwhite ? colors.white : colors.main,
+        }}
+      >
+        <Box component={"div"} sx={{ fontSize: "1.3rem" }}>
+          <Box>{Icon}</Box>
+        </Box>
+        <Typography sx={{ pl: ".3rem", fontSize: "1rem" }}>{text}</Typography>
+      </ListItemButton>
+    </Link>
   );
 }
 function Navbar() {
-  const user = useSelector(selectCurrentUser);
+  const [search, setSearchval] = useState("");
+  const [navStick, setNavStick] = useState(false);
+  const dispatch = useDispatch();
+  const lang = useSelector(selectLang);
   const cartItems = useSelector(selectCartItems);
+  const length = cartItems.length;
 
-  const [value, setValue] = useState("");
-  const navigate = useNavigate();
-
-  const languege = "en";
-
-  const handleSearch = (e) => {
-    const lang = JSON.parse(localStorage.getItem("lang"));
-
-    e.preventDefault();
-    const query = queryString.stringify({ search: value });
+  useEffect(() => {
+    window.addEventListener("scroll", navbarScroll);
+    return () => {
+      window.removeEventListener("scroll", navbarScroll);
+    };
+  });
+  const navbarScroll = () => {
+    if (window.scrollY > 100) {
+      setNavStick(true);
+    } else {
+      setNavStick(false);
+    }
   };
 
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    dispatch(getSearchQuery(search));
+  };
+  const langtext = {
+    en: "English",
+    fr: "france",
+  };
   return (
-    <>
+    <Box>
       <Stack
         sx={{
           bgcolor: colors.main,
@@ -90,18 +98,18 @@ function Navbar() {
           >
             <Typography>we are open 247</Typography>
             <List sx={{ display: "flex", pl: "1.5rem", textAlign: "center" }}>
-              <Selectlanguage />
+              <Selectlanguage langtext={langtext} />
               <Boxes
-                text={NavbarList.signIn[languege]}
+                text={NavbarList.signIn[lang]}
                 Icon={NavbarList.signIn.icon}
                 link={NavbarList.signIn.link}
-                navigate={navigate}
+                colorwhite
               />
 
               <Boxes
-                text={NavbarList.SignUp[languege]}
+                text={NavbarList.SignUp[lang]}
                 link={NavbarList.SignUp.link}
-                navigate={navigate}
+                colorwhite
               />
             </List>
           </Stack>
@@ -111,9 +119,9 @@ function Navbar() {
         sx={{
           paddingTop: 2,
           paddingBottom: 2,
-          position: "relative",
         }}
         elevation={1}
+        className={navStick ? "nav-wrap nav-sticky" : "nav-wrap"}
       >
         <Container>
           <Stack
@@ -125,36 +133,47 @@ function Navbar() {
               alignItems: "center",
             }}
           >
-            <Box className="logo" onClick={() => navigate("/Home")}>
-              <Box
-                sx={{
-                  display: "flex",
-                  fontSize: {
-                    xs: ".7rem",
-                  },
-                }}
-              >
+            <Link to={"/"} style={{ textDecoration: "none" }}>
+              <Box className="logo">
                 <Box
-                  variant="h4"
-                  component={"h1"}
-                  fontStyle={"italic"}
-                  color={colors.main}
+                  sx={{
+                    color: colors.black,
+                    display: "flex",
+                    height: "2rem",
+                    padding: "0.8rem",
+                    alignItems: "center",
+                    fontSize: {
+                      xs: ".7rem",
+                    },
+                    "&:hover": {
+                      bgcolor: colors.Grey100,
+                    },
+                  }}
                 >
-                  Afro
-                </Box>
-                <Box variant="h4" component={"h1"}>
-                  Trade
+                  <Box
+                    variant="h4"
+                    component={"h1"}
+                    fontStyle={"italic"}
+                    color={colors.main}
+                  >
+                    Afric
+                  </Box>
+                  <Box variant="h4" component={"h1"}>
+                    Ocean
+                  </Box>
                 </Box>
               </Box>
-            </Box>
+            </Link>
             <Box
               component={"form"}
               sx={{
                 width: "40%",
-                height: "2rem",
+                height: "2.7rem",
                 display: " flex",
                 justifyContent: "space-between",
-                padding: "0.2rem",
+                padding: "0",
+                paddingLeft: "2rem",
+                paddingRight: "0.2rem",
                 border: "solid 2px rgba(0 ,0 ,0 , 0.8)",
                 borderRadius: "1.5rem",
                 textAlign: "center",
@@ -165,23 +184,31 @@ function Navbar() {
                   display: "none",
                 },
               }}
-              onSubmit={handleSearch}
+              onSubmit={handleSubmit}
             >
               <Input
                 type="text"
-                placeholder="search for anything"
+                placeholder={keywords.placehold[lang]}
                 sx={{ width: "85%" }}
-                value={value}
+                value={search}
                 disableUnderline={true}
-                onChange={(e) => setValue(e.target.value)}
+                onChange={(e) => setSearchval(e.target.value.toLowerCase())}
               />
               <Button
                 type="submit"
                 variant="contained"
                 disableElevation
-                sx={{ borderRadius: 12, textTransform: "capitalize" }}
+                sx={{
+                  borderRadius: 12,
+                  textTransform: "capitalize",
+                  width: "7rem",
+                  display: "flex",
+                  alignItems: "center",
+                }}
               >
-                <FaSearch />
+                <Box sx={{ pr: ".3rem", mt: "0.1rem" }}>
+                  <FaSearch />
+                </Box>
                 <Typography variant="subtitle2" pl={"2px"}>
                   search
                 </Typography>
@@ -195,28 +222,31 @@ function Navbar() {
                   display: "flex",
                   justifyContent: "space-between",
                   minWidth: "10rem",
-                  width: "50%",
+                  width: "60%",
                   background: colors.Grey100,
                   height: "2rem",
-                  padding: "0.2rem",
                   borderRadius: "1.5rem",
                   textAlign: "center",
                   alignItems: "center",
                   pl: 2,
                 },
               }}
-              onSubmit={handleSearch}
+              onSubmit={handleSubmit}
             >
               <Box color={colors.main} mt={"3px"}>
                 <FaSearch />
               </Box>
               <Input
                 type="text"
-                placeholder="search for anything"
+                placeholder={keywords.placehold[lang]}
                 disableUnderline={true}
-                sx={{ minWidth: "100%", ml: 1, fontSize: ".9rem" }}
-                value={value}
-                onChange={(e) => setValue(e.target.value)}
+                sx={{
+                  minWidth: "100%",
+                  ml: 1,
+                  fontSize: ".75rem",
+                }}
+                value={search}
+                onChange={(e) => setSearchval(e.target.value.toLowerCase())}
               />
             </Box>
             <List
@@ -227,6 +257,7 @@ function Navbar() {
                 display: "flex",
                 pl: "1.5rem",
                 textAlign: "center",
+                alignItems: "center",
               }}
             >
               <Stack>
@@ -250,30 +281,36 @@ function Navbar() {
                         left: "1.3rem",
                       }}
                     >
-                      12
+                      {length}
                     </Typography>
                   </Box>
 
                   <Boxes
-                    text={NavbarList.cart[languege]}
+                    text={NavbarList.cart[lang]}
                     Icon={NavbarList.cart.icon}
+                    link={NavbarList.cart.link}
                   />
                 </Box>
               </Stack>
 
               <Boxes
-                text={NavbarList.Contact[languege]}
+                text={NavbarList.Contact[lang]}
                 Icon={NavbarList.Contact.icon}
                 link={NavbarList.Contact.link}
-                navigate={navigate}
               />
-
-              <Boxes text={"+260773416630"}></Boxes>
+              <Link
+                to={
+                  "https://wa.me/260773416630?text=i'm intrested to be Part of AfricOcean Market"
+                }
+                style={{ textDecoration: "none" }}
+              >
+                <Boxes text={"Become A Supplier"}></Boxes>
+              </Link>
             </List>
           </Stack>
         </Container>
       </Paper>
-    </>
+    </Box>
   );
 }
 

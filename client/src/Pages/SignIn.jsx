@@ -5,7 +5,6 @@ import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
-import Link from "@mui/material/Link";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
@@ -15,7 +14,7 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useSignInMutation } from "../State/AuthApi";
 import { useDispatch } from "react-redux";
 import { setCredentials } from "../State/AuthSlice";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Alert } from "@mui/material";
 
 function Copyright(props) {
@@ -141,12 +140,18 @@ export default function SignIn() {
           </Button>
           <Grid container>
             <Grid item xs>
-              <Link href="#" variant="body2">
+              <Link to="#" variant="body2" style={{ color: "#ffa200" }}>
                 Forgot password?
               </Link>
             </Grid>
             <Grid item>
-              <Link variant="body2">{"Don't have an account? Sign Up"}</Link>
+              <Link
+                to={"/Register"}
+                variant="body2"
+                style={{ color: "#ffa200" }}
+              >
+                {"Don't have an account? Sign Up"}
+              </Link>
             </Grid>
           </Grid>
         </Box>
