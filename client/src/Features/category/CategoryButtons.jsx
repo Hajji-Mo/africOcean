@@ -1,4 +1,3 @@
-"use client";
 import { Box, Button, Grid, Paper, Stack, Typography } from "@mui/material";
 import React, { useState } from "react";
 import { BiCategory } from "react-icons/bi";
