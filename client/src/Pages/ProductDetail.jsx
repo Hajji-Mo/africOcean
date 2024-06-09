@@ -27,15 +27,15 @@ import { connectSocket, socket } from "../State/socetApi";
 import PrdocutContent from "../Features/DetailFeatures/PrdocutContent";
 import { keywords } from "../clientUtils/lists";
 import ProductCard from "../Features/HomeFeatures/ProductCard";
+import { selectLang } from "../State/AppSlice";
 
 function ProductDetail() {
-  const lang = JSON.parse(localStorage.getItem("lang"));
-
+  const lang = useSelector(selectLang);
   const user = useSelector(selectCurrentUser);
-
   const { id } = useParams();
   const pram = { id, lang };
   const { data, isLoading } = useGetOneProductQuery(pram);
+
   const { data: recomendData } = useGetAllProductsQuery(lang);
   let recomendedproduct;
   if (recomendData && data) {

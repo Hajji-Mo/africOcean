@@ -4,11 +4,11 @@ import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import { colors } from "../../../MaterialTheme";
+import { selectLang } from "../../State/AppSlice";
+import { useSelector } from "react-redux";
 
 export default function Selectlanguage({ langtext, mobile }) {
-  const lang = localStorage.getItem("lang")
-    ? JSON.parse(localStorage.getItem("lang"))
-    : "en";
+  const lang = useSelector(selectLang);
   const [lange, setLang] = useState("");
   useEffect(
     function () {
