@@ -55,8 +55,9 @@ function PrductInputForms({ langData, lang, handleChange }) {
             select
             value={langData.subcatagory}
             name={`${lang}_SubCategory`}
-            label={`${lang} SubCategory`}
+            label={`${lang}  SubCategory`}
             id={`${lang}_SubCategory`}
+            disabled={notChoosed}
             autoComplete="SubCategory"
             onChange={(e) => handleChange(lang, "subcategory", e.target.value)}
           >

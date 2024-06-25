@@ -137,8 +137,8 @@ export const keywords = {
     fr: "Demander un devis",
   },
   adressLocation: {
-    en: "Please enter country or city for better search",
-    fr: "S'il vous plaît, entrez le pays ou la ville pour une meilleure recherche.",
+    en: "please select a country and city for better search.",
+    fr: "Veuillez sélectionner un pays et une ville pour une meilleure recherche.",
   },
 };
 
