@@ -19,7 +19,6 @@ function PrductInputForms({ langData, lang, handleChange }) {
     (subs) => subs.title[lang] === langData.category
   );
   const notChoosed = langData.category === "";
-  // console.log(langData.subcatagory);
   const text = lang === "en" ? "fill by English" : "fill by France";
   const categoryies = data.map((category) => category.title);
   return (

@@ -49,7 +49,6 @@ function HomePage() {
   const { data: newProducts } = useGetNewProductsQuery({ lang, country, city });
   const { data: allData } = useGetAllProductsQuery(lang);
   let allCategory, categories, allCountries, countries;
-  console.log(allData);
   if (allData) {
     allCategory = allData.doc.map((product) =>
       product[lang]?.category?.toLowerCase().trim()

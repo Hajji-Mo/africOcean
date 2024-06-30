@@ -8,8 +8,12 @@ export default defineConfig({
     outDir: "dist", // This is the output directory for the build
   },
   server: {
-    host: true,
-    strictPort: true,
+    proxy: {
+      "/api": {
+        target: "http://localhost:5000",
+        changeOrigin: true,
+      },
+    },
     port: 80,
   },
 });

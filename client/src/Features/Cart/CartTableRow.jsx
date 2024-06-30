@@ -1,7 +1,6 @@
 import { Box, Input, TableCell, TableRow } from "@mui/material";
 import React, { useState } from "react";
 import { addToCart } from "../../State/cartSlice";
-// import { useMainContext } from "@/context/MainContext";
 
 function CartTableRow({ row, lang }) {
   const [value, setvalue] = useState(row.quantity);
@@ -17,7 +16,7 @@ function CartTableRow({ row, lang }) {
         className="cartItem-name"
         sx={{ paddingY: "1rem" }}
       >
-        {`${row[lang].name.slice(0, 13)}`}
+        {`${row.name.slice(0, 13)}`}
       </TableCell>
       <TableCell align="left">
         <Box sx={{ maxWidth: "4rem" }}>

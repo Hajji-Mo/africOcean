@@ -19,8 +19,6 @@ const RequireAuth = lazy(() => import("./clientUtils/RequireAuth"));
 const Dashboard = lazy(() => import("./Pages/Dashboard/DashBoard"));
 const DashLayout = lazy(() => import("./Pages/Dashboard/layout"));
 const CartPage = lazy(() => import("./Pages/CartPage"));
-// dist/assets/index-Rjg3HRTT.css                                25.13 kB │ gzip:  11.13 kB
-// dist/assets/index-HDX3_aaY.js                              1,449.38 kB │ gzip: 419.66 kB
 
 function App() {
   return (

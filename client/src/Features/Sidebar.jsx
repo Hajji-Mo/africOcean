@@ -92,10 +92,10 @@ const Sidebar = ({ setIsSidebarOpen }) => {
                 fontStyle={"italic"}
                 color={colors.main}
               >
-                Afro
+                Afric
               </Box>
               <Box variant="h4" component={"h1"}>
-                Trade
+                Ocean
               </Box>
             </Box>
           </Box>

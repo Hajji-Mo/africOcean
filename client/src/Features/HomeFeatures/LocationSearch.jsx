@@ -34,7 +34,6 @@ function LocationSearch({
   const currenCities = allCurrentCity.filter(
     (value, index) => allCurrentCity.indexOf(value) === index
   );
-  console.log(currenCities);
   return (
     <Paper
       component={"form"}
